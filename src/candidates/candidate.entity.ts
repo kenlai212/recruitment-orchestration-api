@@ -17,4 +17,20 @@ export class Candidate {
         length: 255
     })
     fullName: string;
+
+    @Column({
+        nullable: true,
+        type: "varchar",
+        length: 255,
+        unique: true
+    })
+    emailAddress: string;
+
+    @Column({
+        nullable: true,
+        type: "varchar",
+        length: 64,
+        unique: true
+    })
+    phoneNumber: string;
 }

@@ -20,7 +20,7 @@ import { Candidate } from './candidates/candidate.entity';
         Candidate
       ],
       synchronize: true,
-      logging: process.env.DB_LOGGING === 'true' ? ['error', 'warn', 'info'] : false,
+      logging: process.env.DB_LOGGING === 'true' ? ['error', 'warn', 'info', 'log'] : false,
     }),
     CandidatesModule
   ]

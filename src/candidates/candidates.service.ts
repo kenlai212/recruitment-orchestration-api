@@ -1,4 +1,4 @@
-import { Injectable, InternalServerErrorException, Logger } from "@nestjs/common";
+import { BadRequestException, Injectable, InternalServerErrorException, Logger } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Candidate } from "./candidate.entity";
 import { Repository } from 'typeorm';
@@ -13,9 +13,23 @@ export class CandidateService {
         private readonly candidateRepository: Repository<Candidate>,
     ) { }
 
-    async createCandidate(fullName: string): Promise<CandidateDTO> {
+    async createCandidate(fullName: string, emailAddress?: string, phoneNumber?: string): Promise<CandidateDTO> {
         let candidate = new Candidate();
         candidate.fullName = fullName;
+
+        await this.checkEmailOrPhoneExists(emailAddress, phoneNumber)
+            .then((exists) => {
+                if (exists) {
+                    throw new BadRequestException("Email address or phone number already exists");
+                }
+            });
+
+        if (emailAddress) {
+            candidate.emailAddress = emailAddress;
+        }
+        if (phoneNumber) {
+            candidate.phoneNumber = phoneNumber;
+        }
 
         await this.candidateRepository.save(candidate)
             .catch((error) => {
@@ -26,9 +40,85 @@ export class CandidateService {
         return this.candidateEntityToDTO(candidate);
     }
 
+    async updateCandidate(candidateId: string, fullName?: string, emailAddress?: string, phoneNumber?: string): Promise<CandidateDTO> {
+        let candidate = await this.candidateRepository.findOneBy({ candidateId })
+            .catch((error) => {
+                this.logger.error(error);
+                throw new InternalServerErrorException("updateCandidate() not available");
+            });
+
+        if (!candidate) {
+            throw new InternalServerErrorException("Candidate not found");
+        }
+
+        if (!fullName && !emailAddress && !phoneNumber) {
+            throw new BadRequestException("No fields to update");
+        }
+
+        await this.checkEmailOrPhoneExists(emailAddress, phoneNumber)
+            .then((exists) => {
+                if (exists) {
+                    throw new BadRequestException("Email address or phone number already exists");
+                }
+            });
+
+        if (fullName) {
+            candidate.fullName = fullName;
+        }
+
+        if (emailAddress) {
+            candidate.emailAddress = emailAddress;
+        }
+
+        if (phoneNumber) {
+            candidate.phoneNumber = phoneNumber;
+        }
+
+        candidate.updatedAt = new Date();
+
+        await this.candidateRepository.save(candidate)
+            .catch((error) => {
+                this.logger.error(error);
+                throw new InternalServerErrorException("updateCandidate() not available");
+            });
+
+        return this.candidateEntityToDTO(candidate);
+    }
+
+    async getCandidateById(candidateId: string): Promise<CandidateDTO> {
+        let candidate = await this.candidateRepository.findOneBy({ candidateId })
+            .catch((error) => {
+                this.logger.error(error);
+                throw new InternalServerErrorException("getCandidateById() not available");
+            });
+
+        if (!candidate) {
+            throw new InternalServerErrorException("Candidate not found");
+        }
+
+        return this.candidateEntityToDTO(candidate);
+    }
+
+    private async checkEmailOrPhoneExists(emailAddress?: string, phoneNumber?: string): Promise<boolean> {
+        if (!emailAddress && !phoneNumber) {
+            return false;
+        }
+
+        const existingCandidate = await this.candidateRepository.findOne({
+            where: [
+                { emailAddress },
+                { phoneNumber }
+            ]
+        });
+
+        return !!existingCandidate;
+    }
+
     private candidateEntityToDTO(candidate: Candidate): CandidateDTO {
         let dto = new CandidateDTO(candidate.fullName);
         dto.candidateId = candidate.candidateId;
+        dto.emailAddress = candidate.emailAddress;
+        dto.phoneNumber = candidate.phoneNumber;
         dto.createdAt = candidate.createdAt;
         dto.updatedAt = candidate.updatedAt;
         return dto;

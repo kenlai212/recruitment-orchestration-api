@@ -1,5 +1,5 @@
-import { Body, Controller, Logger, Post } from "@nestjs/common";
-import { CandidateDTO, NewCandidateRequestDTO } from "./candidates.dto";
+import { Body, Controller, Get, Logger, Post, Put, Query } from "@nestjs/common";
+import { CandidateDTO, NewCandidateRequestDTO, UpdateCandidateRequestDTO } from "./candidates.dto";
 import { CandidateService } from "./candidates.service";
 
 @Controller()
@@ -10,8 +10,18 @@ export class CandidatesController {
         private readonly candidatesService: CandidateService,
     ) { }
 
+    @Get("/candidate/:candidateId")
+    async getCandidateById(@Query('candidateId') candidateId: string): Promise<CandidateDTO> {
+        return await this.candidatesService.getCandidateById(candidateId);
+    }
+
     @Post("/candidate")
     async newCandidate(@Body() requestBody: NewCandidateRequestDTO): Promise<CandidateDTO> {
-        return await this.candidatesService.createCandidate(requestBody.name);
+        return await this.candidatesService.createCandidate(requestBody.name, requestBody.emailAddress, requestBody.phoneNumber);
+    }
+
+    @Put("/candidate")
+    async updateCandidate(@Body() requestBody: UpdateCandidateRequestDTO): Promise<CandidateDTO> {
+        return await this.candidatesService.updateCandidate(requestBody.candidateId, requestBody.fullName, requestBody.emailAddress, requestBody.phoneNumber);
     }
 }

@@ -4,7 +4,7 @@ import { IsNotEmpty, IsString, MaxLength, IsEmail, IsOptional } from 'class-vali
 export class CandidateDTO {
     candidateId: string;
     name: string;
-    email: string;
+    emailAddress: string;
     phoneNumber: string;
     resumeUrl: string;
     createdAt: Date;
@@ -29,7 +29,7 @@ export class NewCandidateRequestDTO {
     })
     @IsEmail()
     @IsOptional()
-    email: string;
+    emailAddress: string;
 
     @ApiPropertyOptional({
         description: 'The phone number of the candidate',
@@ -37,4 +37,35 @@ export class NewCandidateRequestDTO {
     @IsString()
     @IsOptional()
     phoneNumber: string;
+}
+
+export class UpdateCandidateRequestDTO {
+    @ApiProperty({
+        description: 'The ID of the requestor',
+    })
+    @IsNotEmpty()
+    @IsString()
+    @MaxLength(36)
+    candidateId: string;
+
+    @ApiPropertyOptional({
+        description: 'The full name of the candidate',
+    })
+    @IsString()
+    @IsOptional()
+    fullName!: string;
+
+    @ApiPropertyOptional({
+        description: 'The email of the candidate',
+    })
+    @IsEmail()
+    @IsOptional()
+    emailAddress!: string;
+
+    @ApiPropertyOptional({
+        description: 'The phone number of the candidate',
+    })
+    @IsString()
+    @IsOptional()
+    phoneNumber!: string;
 }
