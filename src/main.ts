@@ -18,7 +18,7 @@ async function bootstrap() {
     .setTitle('Recruitment Orchestration API')
     .addServer(process.env.SWAGGER_SERVER_PREFIX || '')
     .setDescription('Manulife Recruitment Orchestration API')
-    .setVersion('1.0.0')
+    .setVersion(process.env.VERSION || '0.0.0')
     .addTag('recruitment-orchestration')
     .addBearerAuth()
     .build();
