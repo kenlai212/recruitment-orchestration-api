@@ -1,8 +1,9 @@
-import { BadRequestException, Injectable, InternalServerErrorException, Logger } from "@nestjs/common";
+import { BadRequestException, Injectable, InternalServerErrorException, Logger, NotFoundException } from "@nestjs/common";
 import { SocialProfile } from "./socialProfile.entity";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from 'typeorm';
 import { SocialProfileDTO } from "./socialProfiles.dtos";
+import { CandidateService } from "../candidates/candidates.service";
 
 @Injectable()
 export class SocialProfilesService {
@@ -11,11 +12,16 @@ export class SocialProfilesService {
     constructor(
         @InjectRepository(SocialProfile)
         private readonly socialProfileRepository: Repository<SocialProfile>,
+        private readonly candidateService: CandidateService
     ) { }
 
     async createSocialProfile(candidateId: string, provider: string, providerHandle: string, url?: string, providerUserId?: string): Promise<SocialProfileDTO> {
         if (!await this.checkSocialProfileUnique(provider, providerHandle)) {
             throw new BadRequestException("Social profile with the same provider and provider handle already exists");
+        }
+
+        if (!await this.validateCandidateId(candidateId)) {
+            throw new BadRequestException("Invalid candidate ID");
         }
 
         let socialProfile = new SocialProfile();
@@ -39,7 +45,7 @@ export class SocialProfilesService {
         return this.socialProfileEntityToDTO(socialProfile);
     }
 
-    async findCandidate(candidateId?: string, provider?: string, providerHandle?: string): Promise<Array<SocialProfileDTO>> {
+    async findSocialProfiles(candidateId?: string, provider?: string, providerHandle?: string): Promise<Array<SocialProfileDTO>> {
         if (!candidateId && !provider && !providerHandle) {
             throw new BadRequestException("At least one of candidateId, provider or providerHandle must be provided");
         }
@@ -64,6 +70,22 @@ export class SocialProfilesService {
                 this.logger.error(error);
                 throw new InternalServerErrorException("deleteSocialProfile() not available");
             });
+    }
+
+    private async validateCandidateId(candidateId: string): Promise<boolean> {
+        const candidate = await this.candidateService.getCandidateById(candidateId)
+            .catch((error) => {
+                if (error instanceof NotFoundException) {
+                    this.logger.warn(`Candidate with ID ${candidateId} not found`);
+                    return false;
+                } else {
+                    this.logger.error(error);
+                    throw new InternalServerErrorException("validateCandidateId() not available");
+                }
+            });
+
+
+        return candidate ? false : true;
     }
 
     private async checkSocialProfileUnique(provider: string, providerHandle: string): Promise<boolean> {

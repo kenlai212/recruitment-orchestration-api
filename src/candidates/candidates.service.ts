@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable, InternalServerErrorException, Logger } from "@nestjs/common";
+import { BadRequestException, Injectable, InternalServerErrorException, Logger, NotFoundException } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Candidate } from "./candidate.entity";
 import { Repository } from 'typeorm';
@@ -93,7 +93,7 @@ export class CandidateService {
             });
 
         if (!candidate) {
-            throw new InternalServerErrorException("Candidate not found");
+            throw new NotFoundException("Candidate not found");
         }
 
         return this.candidateEntityToDTO(candidate);

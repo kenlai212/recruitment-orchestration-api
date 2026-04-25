@@ -13,6 +13,9 @@ import { Candidate } from "./candidate.entity";
     ],
     providers: [
         CandidateService
+    ],
+    exports: [
+        CandidateService
     ]
 })
 export class CandidatesModule { }

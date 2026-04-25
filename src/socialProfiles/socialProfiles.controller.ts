@@ -12,7 +12,7 @@ export class SocialProfilesController {
 
     @Get("/social-profiles")
     async getCandidateById(@Query() query: GetSocialProfilesRequestDTO): Promise<Array<SocialProfileDTO>> {
-        return await this.socialProfilesService.findCandidate(
+        return await this.socialProfilesService.findSocialProfiles(
             query.candidateId,
             query.provider,
             query.providerHandle

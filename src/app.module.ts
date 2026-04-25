@@ -5,6 +5,8 @@ import { TypeOrmModule } from '@nestjs/typeorm/dist/typeorm.module';
 import { Candidate } from './candidates/candidate.entity';
 import { SocialProfile } from './socialProfiles/socialProfile.entity';
 import { SocialProfilesModule } from './socialProfiles/socialProfiles.module';
+import { CertificationsModule } from './certifications/certifications.module';
+import { Certification } from './certifications/certification.entity';
 
 @Module({
   imports: [
@@ -20,13 +22,15 @@ import { SocialProfilesModule } from './socialProfiles/socialProfiles.module';
       database: process.env.DB_NAME,
       entities: [
         Candidate,
-        SocialProfile
+        SocialProfile,
+        Certification
       ],
       synchronize: true,
       logging: process.env.DB_LOGGING === 'true' ? ['error', 'warn', 'info', 'log'] : false,
     }),
     CandidatesModule,
-    SocialProfilesModule
+    SocialProfilesModule,
+    CertificationsModule
   ]
 })
 export class AppModule { }
