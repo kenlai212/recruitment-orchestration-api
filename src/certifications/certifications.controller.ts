@@ -1,7 +1,7 @@
 import { Body, Controller, Delete, Get, Post, Query } from "@nestjs/common";
 import { CertificationDTO, NewCertificationRequestDTO } from "./certifications.dtos";
 
-@Controller('certifications')
+@Controller()
 export class CertificationsController {
     @Post("/certification")
     async newCertification(@Body() body: NewCertificationRequestDTO): Promise<CertificationDTO> {
@@ -15,5 +15,10 @@ export class CertificationsController {
 
     @Delete("/certification/:certificationId")
     async deleteCertificationById(@Query('certificationId') certificationId: string): Promise<void> {
+    }
+
+    @Post("/certification/upload-license")
+    async uploadLicense(@Query('certificationId') certificationId: string, @Body() licenseUrl: string): Promise<CertificationDTO> {
+        return new CertificationDTO();
     }
 }

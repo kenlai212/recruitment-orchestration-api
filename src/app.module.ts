@@ -7,6 +7,12 @@ import { SocialProfile } from './socialProfiles/socialProfile.entity';
 import { SocialProfilesModule } from './socialProfiles/socialProfiles.module';
 import { CertificationsModule } from './certifications/certifications.module';
 import { Certification } from './certifications/certification.entity';
+import { CasesModule } from './cases/cases.module';
+import { EngagementsModule } from './engagements/engagements.module';
+import { Resume } from './resumes/resume.entity';
+import { GovernmentId } from './govermentIds/govermentId.entity';
+import { GovermentIdsModule } from './govermentIds/govermentIds.module';
+import { ResumesModule } from './resumes/resumes.module';
 
 @Module({
   imports: [
@@ -22,6 +28,8 @@ import { Certification } from './certifications/certification.entity';
       database: process.env.DB_NAME,
       entities: [
         Candidate,
+        Resume,
+        GovernmentId,
         SocialProfile,
         Certification
       ],
@@ -30,7 +38,11 @@ import { Certification } from './certifications/certification.entity';
     }),
     CandidatesModule,
     SocialProfilesModule,
-    CertificationsModule
+    CertificationsModule,
+    CasesModule,
+    EngagementsModule,
+    GovermentIdsModule,
+    ResumesModule
   ]
 })
 export class AppModule { }

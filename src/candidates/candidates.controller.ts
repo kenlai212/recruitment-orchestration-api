@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Logger, Post, Put, Query } from "@nestjs/common";
+import { Body, Controller, Delete, Get, Logger, Post, Put, Query } from "@nestjs/common";
 import { CandidateDTO, NewCandidateRequestDTO, UpdateCandidateRequestDTO } from "./candidates.dto";
 import { CandidateService } from "./candidates.service";
 
@@ -21,7 +21,12 @@ export class CandidatesController {
     }
 
     @Put("/candidate")
-    async updateCandidate(@Body() requestBody: UpdateCandidateRequestDTO): Promise<CandidateDTO> {
+    async updateCandidateDetails(@Body() requestBody: UpdateCandidateRequestDTO): Promise<CandidateDTO> {
         return await this.candidatesService.updateCandidate(requestBody.candidateId, requestBody.fullName, requestBody.emailAddress, requestBody.phoneNumber);
+    }
+
+    @Delete("/candidate/:candidateId")
+    async deleteCandidate(@Query('candidateId') candidateId: string): Promise<void> {
+        return await this.candidatesService.deleteCandidate(candidateId);
     }
 }

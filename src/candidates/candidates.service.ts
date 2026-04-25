@@ -99,6 +99,25 @@ export class CandidateService {
         return this.candidateEntityToDTO(candidate);
     }
 
+    async deleteCandidate(candidateId: string): Promise<void> {
+        let candidate = await this.candidateRepository.findOneBy({ candidateId })
+            .catch((error) => {
+                this.logger.error(error);
+                throw new InternalServerErrorException("deleteCandidate() not available");
+            });
+
+        if (!candidate) {
+            throw new NotFoundException("Candidate not found");
+        }
+        await this.candidateRepository.remove(candidate)
+            .catch((error) => {
+                this.logger.error(error);
+                throw new InternalServerErrorException("deleteCandidate() not available");
+            });
+
+        return;
+    }
+
     private async checkEmailOrPhoneExists(emailAddress?: string, phoneNumber?: string): Promise<boolean> {
         if (!emailAddress && !phoneNumber) {
             return false;
