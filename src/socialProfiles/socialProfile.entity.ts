@@ -26,26 +26,23 @@ export class SocialProfile {
     provider: string
 
     @Column({
-        nullable: false,
+        nullable: true,
         type: "varchar",
         length: 255,
-        unique: true
     })
-    url: string
+    url!: string
 
     @Column({
         nullable: true,
         type: "varchar",
         length: 255,
-        unique: true
     })
-    providerUserId: string
+    providerUserId!: string
 
     @Column({
         nullable: false,
         type: "varchar",
-        length: 255,
-        unique: true
+        length: 255
     })
     providerHandle: string
 }

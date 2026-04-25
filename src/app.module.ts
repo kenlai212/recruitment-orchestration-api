@@ -3,6 +3,8 @@ import { ConfigModule } from '@nestjs/config';
 import { CandidatesModule } from './candidates/candidates.module';
 import { TypeOrmModule } from '@nestjs/typeorm/dist/typeorm.module';
 import { Candidate } from './candidates/candidate.entity';
+import { SocialProfile } from './socialProfiles/socialProfile.entity';
+import { SocialProfilesModule } from './socialProfiles/socialProfiles.module';
 
 @Module({
   imports: [
@@ -17,12 +19,14 @@ import { Candidate } from './candidates/candidate.entity';
       password: process.env.DB_PASSWORD,
       database: process.env.DB_NAME,
       entities: [
-        Candidate
+        Candidate,
+        SocialProfile
       ],
       synchronize: true,
       logging: process.env.DB_LOGGING === 'true' ? ['error', 'warn', 'info', 'log'] : false,
     }),
-    CandidatesModule
+    CandidatesModule,
+    SocialProfilesModule
   ]
 })
 export class AppModule { }

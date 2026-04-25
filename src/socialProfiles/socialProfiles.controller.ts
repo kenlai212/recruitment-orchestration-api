@@ -1,5 +1,5 @@
-import { Body, Controller, Get, Logger, Param, Post, Query } from "@nestjs/common";
-import { PostSocialProfileRequestDTO, SocialProfileDTO } from "./socialProfiles.dtos";
+import { Body, Controller, Delete, Get, Logger, Param, Post, Query } from "@nestjs/common";
+import { GetSocialProfilesRequestDTO, PostSocialProfileRequestDTO, SocialProfileDTO } from "./socialProfiles.dtos";
 import { SocialProfilesService } from "./socialProfiles.service";
 
 @Controller('social-profiles')
@@ -10,23 +10,28 @@ export class SocialProfilesController {
         private readonly socialProfilesService: SocialProfilesService,
     ) { }
 
-    /*@Get("/social-profile/:candidateId")
-    async getCandidateById(@Param() param: GetCandidateRequestDTO): Promise<SocialProfileDTO> {
-        return await this.socialProfilesService.findCandidate(param.candidateId, param.);
-    }*/
+    @Get("/social-profiles")
+    async getCandidateById(@Query() query: GetSocialProfilesRequestDTO): Promise<Array<SocialProfileDTO>> {
+        return await this.socialProfilesService.findCandidate(
+            query.candidateId,
+            query.provider,
+            query.providerHandle
+        );
+    }
 
     @Post("/social-profile")
     async newCandidate(@Body() requestBody: PostSocialProfileRequestDTO): Promise<SocialProfileDTO> {
         return await this.socialProfilesService.createSocialProfile(
+            requestBody.candidateId,
             requestBody.provider,
+            requestBody.providerHandle,
             requestBody.url,
-            requestBody.providerUserId,
-            requestBody.providerHandle
+            requestBody.providerUserId
         );
     }
 
-    /*@Put("/social-profile")
-    async updateCandidate(@Body() requestBody: UpdateCandidateRequestDTO): Promise<CandidateDTO> {
-        return await this.candidatesService.updateCandidate(requestBody.candidateId, requestBody.fullName, requestBody.emailAddress, requestBody.phoneNumber);
-    }*/
+    @Delete("/social-profile/:socialProfileId")
+    async deleteSocialProfile(@Param("socialProfileId") socialProfileId: string): Promise<void> {
+        return await this.socialProfilesService.deleteSocialProfile(socialProfileId);
+    }
 }

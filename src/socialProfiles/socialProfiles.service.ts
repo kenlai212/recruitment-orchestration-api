@@ -1,7 +1,7 @@
 import { BadRequestException, Injectable, InternalServerErrorException, Logger } from "@nestjs/common";
 import { SocialProfile } from "./socialProfile.entity";
-import { InjectRepository } from "@nestjs/typeorm/dist/common/typeorm.decorators";
-import { Repository } from "typeorm/browser/repository/Repository.js";
+import { InjectRepository } from "@nestjs/typeorm";
+import { Repository } from 'typeorm';
 import { SocialProfileDTO } from "./socialProfiles.dtos";
 
 @Injectable()
@@ -13,12 +13,22 @@ export class SocialProfilesService {
         private readonly socialProfileRepository: Repository<SocialProfile>,
     ) { }
 
-    async createSocialProfile(provider: string, url: string, providerUserId: string, providerHandle: string): Promise<SocialProfileDTO> {
+    async createSocialProfile(candidateId: string, provider: string, providerHandle: string, url?: string, providerUserId?: string): Promise<SocialProfileDTO> {
+        if (!await this.checkSocialProfileUnique(provider, providerHandle)) {
+            throw new BadRequestException("Social profile with the same provider and provider handle already exists");
+        }
+
         let socialProfile = new SocialProfile();
+        socialProfile.candidateId = candidateId;
         socialProfile.provider = provider;
-        socialProfile.url = url;
-        socialProfile.providerUserId = providerUserId;
         socialProfile.providerHandle = providerHandle;
+
+        if (url) {
+            socialProfile.url = url;
+        }
+        if (providerUserId) {
+            socialProfile.providerUserId = providerUserId;
+        }
 
         await this.socialProfileRepository.save(socialProfile)
             .catch((error) => {
@@ -29,42 +39,44 @@ export class SocialProfilesService {
         return this.socialProfileEntityToDTO(socialProfile);
     }
 
-    async findCandidate(candidateId: string): Promise<Array<SocialProfileDTO>> {
-        const socialProfiles = await this.socialProfileRepository.find({ where: { candidateId } });
+    async findCandidate(candidateId?: string, provider?: string, providerHandle?: string): Promise<Array<SocialProfileDTO>> {
+        if (!candidateId && !provider && !providerHandle) {
+            throw new BadRequestException("At least one of candidateId, provider or providerHandle must be provided");
+        }
+
+        let whereClause: any = {};
+        if (candidateId) {
+            whereClause.candidateId = candidateId;
+        }
+
+        if (provider && providerHandle) {
+            whereClause.provider = provider;
+            whereClause.providerHandle = providerHandle;
+        }
+
+        const socialProfiles = await this.socialProfileRepository.find({ where: whereClause });
         return socialProfiles.map((sp) => this.socialProfileEntityToDTO(sp));
     }
 
-    async updateCandidate(socialProfileId: string, provider?: string, url?: string, providerUserId?: string, providerHandle?: string): Promise<SocialProfileDTO> {
-        let socialProfile = await this.socialProfileRepository.findOne({ where: { socialProfileId } });
-        if (!socialProfile) {
-            throw new BadRequestException("Social profile not found");
-        }
-
-
-        if (!provider && !url && !providerUserId && !providerHandle) {
-            throw new BadRequestException("At least one field must be provided for update");
-        }
-
-        if (provider) {
-            socialProfile.provider = provider;
-        }
-        if (url) {
-            socialProfile.url = url;
-        }
-        if (providerUserId) {
-            socialProfile.providerUserId = providerUserId;
-        }
-        if (providerHandle) {
-            socialProfile.providerHandle = providerHandle;
-        }
-
-        await this.socialProfileRepository.save(socialProfile)
+    async deleteSocialProfile(socialProfileId: string): Promise<void> {
+        await this.socialProfileRepository.delete({ socialProfileId })
             .catch((error) => {
                 this.logger.error(error);
-                throw new InternalServerErrorException("updateCandidate() not available");
+                throw new InternalServerErrorException("deleteSocialProfile() not available");
+            });
+    }
+
+    private async checkSocialProfileUnique(provider: string, providerHandle: string): Promise<boolean> {
+        return await this.socialProfileRepository.findOne({ where: { provider, providerHandle } })
+            .then((socialProfile) => {
+                return socialProfile ? false : true;
+            }
+            )
+            .catch((error) => {
+                this.logger.error(error);
+                throw new InternalServerErrorException("checkSocialProfileUnique() not available");
             });
 
-        return this.socialProfileEntityToDTO(socialProfile);
     }
 
     private socialProfileEntityToDTO(socialProfile: SocialProfile): SocialProfileDTO {
