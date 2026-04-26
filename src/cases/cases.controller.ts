@@ -1,8 +1,14 @@
 import { Controller, Delete, Get, Post, Query } from "@nestjs/common";
 import { CaseDTO } from "./cases.dtos";
+import { CasesService } from "./cases.service";
 
 @Controller('cases')
 export class CasesController {
+    constructor(
+        private readonly casesService: CasesService
+    ) { }
+
+
     @Post("/case")
     async newCase(): Promise<CaseDTO> {
         return new CaseDTO();

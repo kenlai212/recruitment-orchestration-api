@@ -8,7 +8,7 @@ import { AuthoritiesService } from "./authoritries.service";
 
 @Injectable()
 export class CertificationsService {
-    private readonly logger: Logger = new Logger('CertificationService')
+    private readonly logger: Logger = new Logger('CertificationsService')
 
     constructor(
         @InjectRepository(Certification)

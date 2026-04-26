@@ -13,6 +13,7 @@ import { Resume } from './resumes/resume.entity';
 import { GovernmentId } from './govermentIds/govermentId.entity';
 import { GovermentIdsModule } from './govermentIds/govermentIds.module';
 import { ResumesModule } from './resumes/resumes.module';
+import { Case } from './cases/case.entity';
 
 @Module({
   imports: [
@@ -31,7 +32,8 @@ import { ResumesModule } from './resumes/resumes.module';
         Resume,
         GovernmentId,
         SocialProfile,
-        Certification
+        Certification,
+        Case
       ],
       synchronize: true,
       logging: process.env.DB_LOGGING === 'true' ? ['error', 'warn', 'info', 'log'] : false,
