@@ -4,6 +4,7 @@ import { CertificationsService } from "./certifications.service";
 import { CandidatesModule } from "../candidates/candidates.module";
 import { Certification } from "./certification.entity";
 import { TypeOrmModule } from "@nestjs/typeorm/dist/typeorm.module";
+import { AuthoritiesService } from "./authoritries.service";
 
 @Module({
     imports: [
@@ -14,7 +15,7 @@ import { TypeOrmModule } from "@nestjs/typeorm/dist/typeorm.module";
         CertificationsController
     ],
     providers: [
-        CertificationsService
+        CertificationsService, AuthoritiesService
     ]
 
 })

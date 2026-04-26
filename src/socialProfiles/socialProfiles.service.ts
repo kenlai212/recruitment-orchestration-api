@@ -3,16 +3,16 @@ import { SocialProfile } from "./socialProfile.entity";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from 'typeorm';
 import { SocialProfileDTO } from "./socialProfiles.dtos";
-import { CandidateService } from "../candidates/candidates.service";
+import { CandidatesService } from "../candidates/candidates.service";
 
 @Injectable()
 export class SocialProfilesService {
-    private readonly logger = new Logger('SocialProfilesService');
+    private readonly logger: Logger = new Logger('SocialProfilesService')
 
     constructor(
         @InjectRepository(SocialProfile)
         private readonly socialProfileRepository: Repository<SocialProfile>,
-        private readonly candidateService: CandidateService
+        private readonly candidatesService: CandidatesService
     ) { }
 
     async createSocialProfile(candidateId: string, provider: string, providerHandle: string, url?: string, providerUserId?: string): Promise<SocialProfileDTO> {
@@ -20,12 +20,11 @@ export class SocialProfilesService {
             throw new BadRequestException("Social profile with the same provider and provider handle already exists");
         }
 
-        if (!await this.validateCandidateId(candidateId)) {
-            throw new BadRequestException("Invalid candidate ID");
-        }
-
         let socialProfile = new SocialProfile();
+
+        await this.validateCandidateId(candidateId);
         socialProfile.candidateId = candidateId;
+
         socialProfile.provider = provider;
         socialProfile.providerHandle = providerHandle;
 
@@ -73,19 +72,13 @@ export class SocialProfilesService {
     }
 
     private async validateCandidateId(candidateId: string): Promise<boolean> {
-        const candidate = await this.candidateService.getCandidateById(candidateId)
-            .catch((error) => {
-                if (error instanceof NotFoundException) {
-                    this.logger.warn(`Candidate with ID ${candidateId} not found`);
-                    return false;
-                } else {
-                    this.logger.error(error);
-                    throw new InternalServerErrorException("validateCandidateId() not available");
-                }
-            });
+        const candidate = await this.candidatesService.validateCandidateId(candidateId);
 
-
-        return candidate ? false : true;
+        if (!candidate) {
+            throw new BadRequestException("Candidate with ID " + candidateId + " not found");
+        } else {
+            return true;
+        }
     }
 
     private async checkSocialProfileUnique(provider: string, providerHandle: string): Promise<boolean> {

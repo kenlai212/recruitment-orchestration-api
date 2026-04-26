@@ -1,6 +1,6 @@
 import { Module } from "@nestjs/common";
 import { CandidatesController } from "./candidates.controller";
-import { CandidateService } from "./candidates.service";
+import { CandidatesService } from "./candidates.service";
 import { TypeOrmModule } from "@nestjs/typeorm/dist/typeorm.module";
 import { Candidate } from "./candidate.entity";
 
@@ -12,10 +12,10 @@ import { Candidate } from "./candidate.entity";
         CandidatesController
     ],
     providers: [
-        CandidateService
+        CandidatesService
     ],
     exports: [
-        CandidateService
+        CandidatesService
     ]
 })
 export class CandidatesModule { }

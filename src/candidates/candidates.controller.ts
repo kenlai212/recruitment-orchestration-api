@@ -1,13 +1,13 @@
 import { Body, Controller, Delete, Get, Logger, Post, Put, Query } from "@nestjs/common";
 import { CandidateDTO, NewCandidateRequestDTO, UpdateCandidateRequestDTO } from "./candidates.dto";
-import { CandidateService } from "./candidates.service";
+import { CandidatesService } from "./candidates.service";
 
 @Controller()
 export class CandidatesController {
     logger = new Logger('CandidatesController');
 
     constructor(
-        private readonly candidatesService: CandidateService,
+        private readonly candidatesService: CandidatesService,
     ) { }
 
     @Get("/candidate/:candidateId")

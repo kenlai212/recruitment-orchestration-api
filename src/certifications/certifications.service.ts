@@ -3,30 +3,33 @@ import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from 'typeorm';
 import { Certification } from "./certification.entity";
 import { CertificationDTO } from "./certifications.dtos";
+import { CandidatesService } from "../candidates/candidates.service";
+import { AuthoritiesService } from "./authoritries.service";
 
 @Injectable()
 export class CertificationsService {
-    private readonly logger = new Logger('CertificationService');
+    private readonly logger: Logger = new Logger('CertificationService')
 
     constructor(
         @InjectRepository(Certification)
         private readonly certificationRepository: Repository<Certification>,
+        private readonly candidatesService: CandidatesService,
+        private readonly authortiesService: AuthoritiesService
     ) { }
 
     async createCertification(candidateId: string, authority: string, certificateName: string, certificateNumber: string, startDate: Date, endDate: Date): Promise<CertificationDTO> {
         let certification = new Certification();
 
         // Validate candidate ID
-        if (!await this.validateCandidateId(candidateId)) {
-            throw new BadRequestException("");
-        }
+        await this.validateCandidateId(candidateId);
         certification.candidateId = candidateId;
 
         // Validate authority and certificate name
-        if (!await this.validateAuthorityAndCertificateName(authority, certificateName)) {
-            throw new BadRequestException("Authority and certificate name not recognized");
-        }
+        this.authortiesService.validateAuthority(authority);
         certification.authority = authority;
+
+        // Validate certificate name
+        this.authortiesService.validateCertificateName(certificateName);
         certification.certificateName = certificateName;
 
         certification.certificateNumber = certificateNumber;
@@ -110,15 +113,7 @@ export class CertificationsService {
         return "https://example.com/document/12345";
     }
 
-    private async validateAuthorityAndCertificateName(authority: string, certificateName: string): Promise<boolean> {
-        if (!authority || !certificateName) {
-            throw new BadRequestException("Authority and certificate name are required");
-        }
 
-        //todo: implement actual validation logic, e.g. check against a list of known authorities and certificate names
-
-        return true;
-    }
 
 
     private async validateCandidateId(candidateId: string): Promise<boolean> {
@@ -126,7 +121,10 @@ export class CertificationsService {
             throw new InternalServerErrorException("Candidate ID is required");
         }
 
-        //todo: implement actual validation logic, e.g. check if candidate exists in the database
+        const candidateExists = await this.candidatesService.validateCandidateId(candidateId);
+        if (!candidateExists) {
+            throw new BadRequestException("Candidate with ID " + candidateId + " not found");
+        }
 
         return true;
     }

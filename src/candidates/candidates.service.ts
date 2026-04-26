@@ -5,7 +5,7 @@ import { Repository } from 'typeorm';
 import { CandidateDTO } from "./candidates.dto";
 
 @Injectable()
-export class CandidateService {
+export class CandidatesService {
     private readonly logger = new Logger('CandidateService');
 
     constructor(
@@ -116,6 +116,20 @@ export class CandidateService {
             });
 
         return;
+    }
+
+    async validateCandidateId(candidateId: string): Promise<boolean> {
+        const candidate = await this.candidateRepository.findOneBy({ candidateId })
+            .catch((error) => {
+                this.logger.error(error);
+                throw new InternalServerErrorException("validateCandidateId() not available");
+            });
+
+        if (!candidate) {
+            return false;
+        } else {
+            return true;
+        }
     }
 
     private async checkEmailOrPhoneExists(emailAddress?: string, phoneNumber?: string): Promise<boolean> {
