@@ -23,12 +23,6 @@ export class Certification {
         type: "varchar",
         length: 255
     })
-    provider: string
-    @Column({
-        nullable: false,
-        type: "varchar",
-        length: 255
-    })
     authority: string;
 
     @Column({
@@ -36,14 +30,14 @@ export class Certification {
         type: "varchar",
         length: 255
     })
-    name: string;
+    certificateName: string;
 
     @Column({
         nullable: false,
         type: "varchar",
         length: 255
     })
-    licenseNumber: string;
+    certificateNumber: string;
 
     @Column({
         nullable: true,
@@ -56,4 +50,11 @@ export class Certification {
         type: "timestamp"
     })
     endDate: Date;
+
+    @Column({
+        nullable: true,
+        type: "varchar",
+        length: 255
+    })
+    documentIdentifier!: string;
 }
