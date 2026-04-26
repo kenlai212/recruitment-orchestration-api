@@ -22,7 +22,7 @@ export class SocialProfilesService {
 
         let socialProfile = new SocialProfile();
 
-        await this.validateCandidateId(candidateId);
+        await this.candidatesService.validateCandidateId(candidateId);
         socialProfile.candidateId = candidateId;
 
         socialProfile.provider = provider;
@@ -69,16 +69,6 @@ export class SocialProfilesService {
                 this.logger.error(error);
                 throw new InternalServerErrorException("deleteSocialProfile() not available");
             });
-    }
-
-    private async validateCandidateId(candidateId: string): Promise<boolean> {
-        const candidate = await this.candidatesService.validateCandidateId(candidateId);
-
-        if (!candidate) {
-            throw new BadRequestException("Candidate with ID " + candidateId + " not found");
-        } else {
-            return true;
-        }
     }
 
     private async checkSocialProfileUnique(provider: string, providerHandle: string): Promise<boolean> {

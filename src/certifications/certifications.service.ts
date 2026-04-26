@@ -21,7 +21,7 @@ export class CertificationsService {
         let certification = new Certification();
 
         // Validate candidate ID
-        await this.validateCandidateId(candidateId);
+        await this.candidatesService.validateCandidateId(candidateId);
         certification.candidateId = candidateId;
 
         // Validate authority and certificate name
@@ -54,7 +54,6 @@ export class CertificationsService {
 
         let certificationDTOs: Array<CertificationDTO> = [];
         for (const certification of certifications) {
-            this.logger.debug(`Found certification: ${JSON.stringify(certification)}`);
             certificationDTOs.push(this.certificationToDTO(certification));
         }
 
@@ -111,22 +110,6 @@ export class CertificationsService {
 
     private async callExternalDocumentStorageService(documentBase64: string): Promise<string> {
         return "https://example.com/document/12345";
-    }
-
-
-
-
-    private async validateCandidateId(candidateId: string): Promise<boolean> {
-        if (!candidateId) {
-            throw new InternalServerErrorException("Candidate ID is required");
-        }
-
-        const candidateExists = await this.candidatesService.validateCandidateId(candidateId);
-        if (!candidateExists) {
-            throw new BadRequestException("Candidate with ID " + candidateId + " not found");
-        }
-
-        return true;
     }
 
     private certificationToDTO(certification: Certification): CertificationDTO {

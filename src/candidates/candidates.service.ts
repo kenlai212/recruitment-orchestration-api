@@ -118,18 +118,15 @@ export class CandidatesService {
         return;
     }
 
-    async validateCandidateId(candidateId: string): Promise<boolean> {
+    async validateCandidateId(candidateId: string) {
         const candidate = await this.candidateRepository.findOneBy({ candidateId })
             .catch((error) => {
                 this.logger.error(error);
                 throw new InternalServerErrorException("validateCandidateId() not available");
             });
 
-        if (!candidate) {
-            return false;
-        } else {
-            return true;
-        }
+        if (!candidate)
+            throw new BadRequestException(`Invalid canadiateId : ${candidateId}`)
     }
 
     private async checkEmailOrPhoneExists(emailAddress?: string, phoneNumber?: string): Promise<boolean> {

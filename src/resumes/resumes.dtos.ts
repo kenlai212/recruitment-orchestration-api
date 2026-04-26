@@ -1,4 +1,5 @@
 export class ResumeDTO {
+    resumeId: string;
     candidateId: string;
     documentIdentifier: string;
 }
