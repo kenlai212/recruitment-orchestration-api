@@ -1,35 +1,36 @@
+import { Provider } from "./socialProfile.entity";
 import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
 import { IsNotEmpty, IsString, MaxLength, IsOptional } from 'class-validator';
+import { ActorType } from "./socialProfile.entity";
 
 export class SocialProfileDTO {
     id: string
     createdAt: Date
     updatedAt: Date
-    candidateId: string
-    provider: string
+    actorType: ActorType
+    actorId: string
+    provider: Provider
     url: string
     providerUserId: string
     providerHandle: string
 }
 
-
-export enum Provider {
-    INSTAGRAM = 'Instagram',
-    LINKEDIN = 'LinkedIn',
-    GITHUB = 'GitHub',
-    FACEBOOK = 'Facebook',
-    TWITTER = 'Twitter',
-    LINE = 'Line',
-}
-
 export class PostSocialProfileRequestDTO {
+    @ApiProperty({
+        description: 'The ID of the candidate',
+        enum: ActorType,
+        enumName: "ActorType"
+    })
+    @IsNotEmpty()
+    actorType: ActorType;
+
     @ApiProperty({
         description: 'The ID of the candidate',
     })
     @IsNotEmpty()
     @IsString()
     @MaxLength(36)
-    candidateId: string
+    actorId: string;
 
     @ApiProperty({
         description: 'provider of the social profile, e.g. LinkedIn, GitHub, etc.',

@@ -1,7 +1,7 @@
 import { BadRequestException, Injectable, InternalServerErrorException, Logger } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from 'typeorm';
-import { Certification } from "./certification.entity";
+import { ActorType, Certification } from "./certification.entity";
 import { CertificationDTO } from "./certifications.dtos";
 import { CandidatesService } from "../candidates/candidates.service";
 import { AuthoritiesService } from "./authoritries.service";
@@ -17,12 +17,13 @@ export class CertificationsService {
         private readonly authortiesService: AuthoritiesService
     ) { }
 
-    async createCertification(candidateId: string, authority: string, certificateName: string, certificateNumber: string, startDate: Date, endDate: Date): Promise<CertificationDTO> {
+    async createCertification(actorType: ActorType, actorId: string, authority: string, certificateName: string, certificateNumber: string, startDate: Date, endDate: Date): Promise<CertificationDTO> {
         let certification = new Certification();
+        certification.actorType = actorType;
 
-        // Validate candidate ID
-        await this.candidatesService.validateCandidateId(candidateId);
-        certification.candidateId = candidateId;
+        // Validate actor ID
+        await this.validateActor(actorType, actorId)
+        certification.actorId = actorId;
 
         // Validate authority and certificate name
         this.authortiesService.validateAuthority(authority);
@@ -45,8 +46,8 @@ export class CertificationsService {
         return this.certificationToDTO(certification);
     }
 
-    async findCertifications(candidateId: string): Promise<Array<CertificationDTO>> {
-        const certifications = await this.certificationRepository.find({ where: { candidateId } })
+    async findCertifications(actorType: ActorType, actorId: string): Promise<Array<CertificationDTO>> {
+        const certifications = await this.certificationRepository.find({ where: { actorId, actorType } })
             .catch((error) => {
                 this.logger.error(error);
                 throw new InternalServerErrorException("findCertifications() not available");
@@ -108,6 +109,20 @@ export class CertificationsService {
         return certificationDTO;
     }
 
+    private async validateActor(actorType: ActorType, actorId: string) {
+        switch (actorType) {
+            case "CANDIDATE":
+                this.logger.debug(`Validating ${actorType} ${actorId}`)
+                await this.candidatesService.validateCandidateId(actorId);
+                break;
+            case "AGENT":
+                //todo: implement validate agentId
+                break;
+            default:
+                throw new BadRequestException(`Unknow actorType: ${actorType}`);
+        }
+    }
+
     private async callExternalDocumentStorageService(documentBase64: string): Promise<string> {
         return "https://example.com/document/12345";
     }
@@ -115,7 +130,8 @@ export class CertificationsService {
     private certificationToDTO(certification: Certification): CertificationDTO {
         const certificationDTO = new CertificationDTO();
         certificationDTO.certificationId = certification.certificationId;
-        certificationDTO.candidateId = certification.candidateId;
+        certificationDTO.actorType = certification.actorType;
+        certificationDTO.actorId = certification.actorId;
         certificationDTO.authority = certification.authority;
         certificationDTO.certificateName = certification.certificateName;
         certificationDTO.certificateNumber = certification.certificateNumber;

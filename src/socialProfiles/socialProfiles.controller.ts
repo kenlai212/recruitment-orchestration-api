@@ -22,7 +22,8 @@ export class SocialProfilesController {
     @Post("/social-profile")
     async newCandidate(@Body() requestBody: PostSocialProfileRequestDTO): Promise<SocialProfileDTO> {
         return await this.socialProfilesService.createSocialProfile(
-            requestBody.candidateId,
+            requestBody.actorType,
+            requestBody.actorId,
             requestBody.provider,
             requestBody.providerHandle,
             requestBody.url,

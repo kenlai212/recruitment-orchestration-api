@@ -1,4 +1,4 @@
-import { Injectable, InternalServerErrorException, Logger } from "@nestjs/common";
+import { BadRequestException, Injectable, InternalServerErrorException, Logger } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Engagement } from "./engagement.entity";
 import { Repository } from "typeorm";
@@ -21,7 +21,7 @@ export class EngagementsService {
         await this.validateRecruitmentCaseId(recuritmentCaseId)
         engagement.recruitmentCaseId = recuritmentCaseId;
 
-        this.validateType(type);
+        this.validateEngagementType(type);
         engagement.type = type;
 
         await this.engagementsRepository.save(engagement)
@@ -33,7 +33,30 @@ export class EngagementsService {
         return this.entityToDTO(engagement);
     }
 
-    private async validateType(type: string) {
+    async deleteEngagement(engagementId: string): Promise<string> {
+        const engagement = await this.engagementsRepository.findOne({ where: { engagementId } })
+            .catch(error => {
+                this.logger.error(error);
+                throw new InternalServerErrorException("deleteEngagement() not available");
+            });
+
+        if (!engagement)
+            throw new BadRequestException(`Invalid engagement id : ${engagementId}`);
+
+        await this.engagementsRepository.delete({ engagementId })
+            .then(() => {
+                this.logger.log(`deleted engagement ${engagementId}`);
+            })
+            .catch(error => {
+                this.logger.error(error);
+                throw new InternalServerErrorException("deleteEngagement() not available");
+            });
+
+        const msg = `deleted engagement ${engagementId}`;
+        return msg;
+    }
+
+    private async validateEngagementType(type: string) {
 
     }
 

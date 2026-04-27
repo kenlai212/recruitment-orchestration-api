@@ -1,5 +1,10 @@
 import { Column, CreateDateColumn, Entity, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 
+export enum ActorType {
+    AGENT = 'AGENT',
+    CANDIDATE = 'CANDIDATE'
+}
+
 @Entity()
 export class Certification {
     @PrimaryGeneratedColumn('uuid')
@@ -13,10 +18,17 @@ export class Certification {
 
     @Column({
         nullable: false,
+        type: "enum",
+        enum: ActorType
+    })
+    actorType: ActorType
+
+    @Column({
+        nullable: false,
         type: "varchar",
         length: 36
     })
-    candidateId: string
+    actorId: string
 
     @Column({
         nullable: false,

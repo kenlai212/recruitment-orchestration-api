@@ -1,5 +1,19 @@
 import { Column, CreateDateColumn, Entity, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 
+export enum ActorType {
+    AGENT = 'AGENT',
+    CANDIDATE = 'CANDIDATE'
+}
+
+export enum Provider {
+    INSTAGRAM = 'Instagram',
+    LINKEDIN = 'LinkedIn',
+    GITHUB = 'GitHub',
+    FACEBOOK = 'Facebook',
+    TWITTER = 'Twitter',
+    LINE = 'Line',
+}
+
 @Entity()
 export class SocialProfile {
     @PrimaryGeneratedColumn('uuid')
@@ -13,17 +27,24 @@ export class SocialProfile {
 
     @Column({
         nullable: false,
-        type: "varchar",
-        length: 36
+        type: "enum",
+        enum: ActorType
     })
-    candidateId: string
+    actorType: ActorType
 
     @Column({
         nullable: false,
         type: "varchar",
-        length: 255
+        length: 36
     })
-    provider: string
+    actorId: string
+
+    @Column({
+        nullable: false,
+        type: "enum",
+        enum: Provider
+    })
+    provider: Provider
 
     @Column({
         nullable: true,

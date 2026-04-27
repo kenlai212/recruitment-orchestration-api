@@ -1,5 +1,5 @@
 import { BadRequestException, Injectable, InternalServerErrorException, Logger, NotFoundException } from "@nestjs/common";
-import { SocialProfile } from "./socialProfile.entity";
+import { ActorType, Provider, SocialProfile } from "./socialProfile.entity";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from 'typeorm';
 import { SocialProfileDTO } from "./socialProfiles.dtos";
@@ -15,15 +15,16 @@ export class SocialProfilesService {
         private readonly candidatesService: CandidatesService
     ) { }
 
-    async createSocialProfile(candidateId: string, provider: string, providerHandle: string, url?: string, providerUserId?: string): Promise<SocialProfileDTO> {
+    async createSocialProfile(actorType: ActorType, actorId: string, provider: Provider, providerHandle: string, url?: string, providerUserId?: string): Promise<SocialProfileDTO> {
         if (!await this.checkSocialProfileUnique(provider, providerHandle)) {
             throw new BadRequestException("Social profile with the same provider and provider handle already exists");
         }
 
         let socialProfile = new SocialProfile();
 
-        await this.candidatesService.validateCandidateId(candidateId);
-        socialProfile.candidateId = candidateId;
+        await this.validateActor(actorType, actorId);
+        socialProfile.actorType = actorType;
+        socialProfile.actorId = actorId;
 
         socialProfile.provider = provider;
         socialProfile.providerHandle = providerHandle;
@@ -71,8 +72,24 @@ export class SocialProfilesService {
             });
     }
 
-    private async checkSocialProfileUnique(provider: string, providerHandle: string): Promise<boolean> {
-        return await this.socialProfileRepository.findOne({ where: { provider, providerHandle } })
+    private async validateActor(actorType: ActorType, actorId: string) {
+        switch (actorType) {
+            case "CANDIDATE":
+                this.logger.debug(`Validating ${actorType} ${actorId}`)
+                await this.candidatesService.validateCandidateId(actorId);
+                break;
+            case "AGENT":
+                //todo: implement validate agentId
+                break;
+            default:
+                throw new BadRequestException(`Unknow actorType: ${actorType}`);
+        }
+    }
+
+    private async checkSocialProfileUnique(provider: Provider, providerHandle: string): Promise<boolean> {
+        return await this.socialProfileRepository.findOne({
+            where: { providerHandle: providerHandle, provider: provider }
+        })
             .then((socialProfile) => {
                 return socialProfile ? false : true;
             }
@@ -89,7 +106,8 @@ export class SocialProfilesService {
         socialProfileDTO.id = socialProfile.socialProfileId;
         socialProfileDTO.createdAt = socialProfile.createdAt;
         socialProfileDTO.updatedAt = socialProfile.updatedAt;
-        socialProfileDTO.candidateId = socialProfile.candidateId;
+        socialProfileDTO.actorType = socialProfile.actorType
+        socialProfileDTO.actorId = socialProfile.actorId;
         socialProfileDTO.provider = socialProfile.provider;
         socialProfileDTO.url = socialProfile.url;
         socialProfileDTO.providerUserId = socialProfile.providerUserId;

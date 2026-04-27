@@ -1,9 +1,11 @@
 import { ApiProperty } from "@nestjs/swagger";
 import { IsNotEmpty, IsString, MaxLength } from 'class-validator';
+import { ActorType } from "./certification.entity";
 
 export class CertificationDTO {
     certificationId: string;
-    candidateId: string;
+    actorType: string;
+    actorId: string;
     authority: string;
     certificateName: string;
     certificateNumber: string;
@@ -15,11 +17,19 @@ export class CertificationDTO {
 export class NewCertificationRequestDTO {
     @ApiProperty({
         description: 'The ID of the candidate',
+        enum: ActorType,
+        enumName: "ActorType"
+    })
+    @IsNotEmpty()
+    actorType: ActorType;
+
+    @ApiProperty({
+        description: 'The ID of the candidate',
     })
     @IsNotEmpty()
     @IsString()
     @MaxLength(36)
-    candidateId: string;
+    actorId: string;
 
     @ApiProperty({
         description: 'The authority that issued the certification',
@@ -75,4 +85,22 @@ export class UploadLicenseRequestDTO {
     @IsNotEmpty()
     @IsString()
     documentBase64: string;
+}
+
+export class FindCertificationsRequestDTO {
+    @ApiProperty({
+        description: 'The ID of the candidate',
+        enum: ActorType,
+        enumName: "ActorType"
+    })
+    @IsNotEmpty()
+    actorType: ActorType;
+
+    @ApiProperty({
+        description: 'The ID of the candidate',
+    })
+    @IsNotEmpty()
+    @IsString()
+    @MaxLength(36)
+    actorId: string;
 }

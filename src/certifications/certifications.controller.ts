@@ -1,5 +1,5 @@
-import { Body, Controller, Delete, Get, NotFoundException, Post, Query } from "@nestjs/common";
-import { CertificationDTO, NewCertificationRequestDTO, UploadLicenseRequestDTO } from "./certifications.dtos";
+import { Body, Controller, Delete, Get, NotFoundException, Param, Post, Query } from "@nestjs/common";
+import { CertificationDTO, FindCertificationsRequestDTO, NewCertificationRequestDTO, UploadLicenseRequestDTO } from "./certifications.dtos";
 import { CertificationsService } from "./certifications.service";
 
 @Controller()
@@ -11,7 +11,8 @@ export class CertificationsController {
     @Post("/certification")
     async newCertification(@Body() body: NewCertificationRequestDTO): Promise<CertificationDTO> {
         return this.certificationsService.createCertification(
-            body.candidateId,
+            body.actorType,
+            body.actorId,
             body.authority,
             body.certificateName,
             body.certificateNumber,
@@ -20,12 +21,12 @@ export class CertificationsController {
         );
     }
 
-    @Get("/certification/:candidateId")
-    async getCertificationsByCandidateId(@Query('candidateId') candidateId: string): Promise<Array<CertificationDTO>> {
-        const certifications = await this.certificationsService.findCertifications(candidateId);
+    @Get("/certification")
+    async getCertificationsByCandidateId(@Param() param: FindCertificationsRequestDTO): Promise<Array<CertificationDTO>> {
+        const certifications = await this.certificationsService.findCertifications(param.actorType, param.actorId);
 
         if (certifications.length === 0) {
-            throw new NotFoundException("No certifications found for candidate ID: " + candidateId);
+            throw new NotFoundException("No certifications found for actor ID: " + param.actorId);
         }
 
         return certifications;

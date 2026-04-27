@@ -28,7 +28,5 @@ export class PostEngagementRequestDTO {
         enumName: 'EngagementType'
     })
     @IsNotEmpty()
-    @IsString()
-    @MaxLength(36)
     type: EngagementType;
 }
