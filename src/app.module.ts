@@ -8,7 +8,7 @@ import { SocialProfilesModule } from './socialProfiles/socialProfiles.module';
 import { CertificationsModule } from './certifications/certifications.module';
 import { Certification } from './certifications/certification.entity';
 import { RecruitmentCasesModule } from './recruitmentCases/recruitmentCases.module';
-import { EngagementsModule } from './engagements/engagements.module';
+import { EngagementsModule } from './Engagements/engagements.module';
 import { Resume } from './resumes/resume.entity';
 import { GovernmentId } from './govermentIds/govermentId.entity';
 import { GovermentIdsModule } from './govermentIds/govermentIds.module';

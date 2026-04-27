@@ -15,6 +15,9 @@ import { RecruitmentCasesService } from "./recruitmentCases.service";
     ],
     providers: [
         RecruitmentCasesService
+    ],
+    exports: [
+        RecruitmentCasesService
     ]
 })
 export class RecruitmentCasesModule { }

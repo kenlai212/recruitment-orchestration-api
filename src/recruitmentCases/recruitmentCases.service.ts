@@ -1,4 +1,4 @@
-import { Injectable, InternalServerErrorException, Logger, NotFoundException } from "@nestjs/common";
+import { BadRequestException, Injectable, InternalServerErrorException, Logger, NotFoundException } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { RecruitmentCase } from "./recruitmentCase.entity";
 import { Repository } from "typeorm";
@@ -49,6 +49,17 @@ export class RecruitmentCasesService {
         this.logger.debug(`found recruitment case : ${JSON.stringify(recuritmentCase)}`)
 
         return this.caseEntityToDTO(recuritmentCase);
+    }
+
+    async validateRecruitmentCaseid(caseId: string) {
+        let recuritmentCase = await this.caseRepository.findOne({ where: { caseId } })
+            .catch(error => {
+                this.logger.error(error);
+                throw new InternalServerErrorException("validateRecruitemntCaseId() not available");
+            })
+
+        if (!recuritmentCase)
+            throw new BadRequestException(`No recuritment case found with ID ${caseId}`);
     }
 
     private async validateRecuriterId(recuriterId: string): Promise<void> {
