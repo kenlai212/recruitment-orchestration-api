@@ -1,7 +1,7 @@
 import { BadRequestException, Injectable, InternalServerErrorException, Logger } from "@nestjs/common";
 import { ResumeDTO } from "./resumes.dtos";
 import { InjectRepository } from "@nestjs/typeorm";
-import { Resume } from "./resume.entity";
+import { ActorType, Resume } from "./resume.entity";
 import { Repository } from "typeorm";
 import { CandidatesService } from "../candidates/candidates.service";
 
@@ -15,12 +15,12 @@ export class ResumesService {
         private readonly candidatesService: CandidatesService,
     ) { }
 
-    async uploadNewResume(candidateId: string, documentBase64: string): Promise<ResumeDTO> {
+    async uploadNewResume(actorType: ActorType, actorId: string, documentBase64: string): Promise<ResumeDTO> {
         let resume = new Resume();
 
         // Validate candidate ID
-        await this.candidatesService.validateCandidateId(candidateId);
-        resume.candidateId = candidateId;
+        await this.validateActor(actorType, actorId);
+        resume.actorId = actorId;
 
         //upload document
         const documentUrl = await this.callExternalDocumentStorageService(documentBase64)
@@ -39,8 +39,8 @@ export class ResumesService {
         return this.resumeToDTO(resume);
     }
 
-    async findResumes(candidateId: string): Promise<Array<ResumeDTO>> {
-        const resumes = await this.resumeRepository.find({ where: { candidateId } })
+    async findResumes(actorType: ActorType, actorId: string): Promise<Array<ResumeDTO>> {
+        const resumes = await this.resumeRepository.find({ where: { actorType, actorId } })
             .catch((error) => {
                 this.logger.error(error);
                 throw new InternalServerErrorException("findResumes() not available");
@@ -72,6 +72,20 @@ export class ResumesService {
             });
     }
 
+    private async validateActor(actorType: ActorType, actorId: string) {
+        switch (actorType) {
+            case "CANDIDATE":
+                this.logger.debug(`Validating ${actorType} ${actorId}`)
+                await this.candidatesService.validateCandidateId(actorId);
+                break;
+            case "AGENT":
+                //todo: implement validate agentId
+                break;
+            default:
+                throw new BadRequestException(`Unknow actorType: ${actorType}`);
+        }
+    }
+
     private async callExternalDocumentStorageService(documentBase64: string): Promise<string> {
         return "https://example.com/document/12345";
     }
@@ -79,7 +93,8 @@ export class ResumesService {
     private resumeToDTO(resume: Resume) {
         let resumeDTO = new ResumeDTO();
         resumeDTO.resumeId = resume.resumeId;
-        resumeDTO.candidateId = resume.candidateId;
+        resumeDTO.actorType = resume.actorType;
+        resumeDTO.actorId = resume.actorId;
         resumeDTO.documentIdentifier = resume.documentIdentifier;
 
         return resumeDTO;

@@ -1,5 +1,5 @@
-import { Body, Controller, Delete, Get, Param, Post } from "@nestjs/common";
-import { ResumeDTO, UploadResumeRequestDTO } from "./resumes.dtos";
+import { Body, Controller, Delete, Get, Param, Post, Query } from "@nestjs/common";
+import { GetResumesRequestDTO, ResumeDTO, UploadResumeRequestDTO } from "./resumes.dtos";
 
 @Controller()
 export class ResumesController {
@@ -13,8 +13,8 @@ export class ResumesController {
         return;
     }
 
-    @Get("/resume/:candidateId")
-    async getResumeByCandidateId(@Param('candidateId') candidateId: string): Promise<Array<ResumeDTO>> {
+    @Get("/resume")
+    async getResumes(@Query() query: GetResumesRequestDTO): Promise<Array<ResumeDTO>> {
         return [new ResumeDTO()];
     }
 }

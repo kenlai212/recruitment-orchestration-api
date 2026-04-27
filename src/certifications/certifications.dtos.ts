@@ -4,7 +4,7 @@ import { ActorType } from "./certification.entity";
 
 export class CertificationDTO {
     certificationId: string;
-    actorType: string;
+    actorType: ActorType;
     actorId: string;
     authority: string;
     certificateName: string;

@@ -1,9 +1,9 @@
 import { BadRequestException, Injectable, InternalServerErrorException, Logger } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
-import { Engagement } from "./engagement.entity";
 import { Repository } from "typeorm";
 import { RecruitmentCasesService } from "../recruitmentCases/recruitmentCases.service";
 import { EngagementDTO } from "./engagements.dtos";
+import { Engagement } from "./engagement.entity";
 
 @Injectable()
 export class EngagementsService {
