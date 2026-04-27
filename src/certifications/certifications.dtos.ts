@@ -16,7 +16,7 @@ export class CertificationDTO {
 
 export class NewCertificationRequestDTO {
     @ApiProperty({
-        description: 'The ID of the candidate',
+        description: 'Actor Type, either agent or candidate',
         enum: ActorType,
         enumName: "ActorType"
     })
@@ -24,7 +24,7 @@ export class NewCertificationRequestDTO {
     actorType: ActorType;
 
     @ApiProperty({
-        description: 'The ID of the candidate',
+        description: 'The ID of the candidate or agent',
     })
     @IsNotEmpty()
     @IsString()
