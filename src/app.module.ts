@@ -7,13 +7,13 @@ import { SocialProfile } from './socialProfiles/socialProfile.entity';
 import { SocialProfilesModule } from './socialProfiles/socialProfiles.module';
 import { CertificationsModule } from './certifications/certifications.module';
 import { Certification } from './certifications/certification.entity';
-import { CasesModule } from './cases/cases.module';
+import { RecruitmentCasesModule } from './recruitmentCases/recruitmentCases.module';
 import { EngagementsModule } from './engagements/engagements.module';
 import { Resume } from './resumes/resume.entity';
 import { GovernmentId } from './govermentIds/govermentId.entity';
 import { GovermentIdsModule } from './govermentIds/govermentIds.module';
 import { ResumesModule } from './resumes/resumes.module';
-import { Case } from './cases/case.entity';
+import { RecruitmentCase } from './recruitmentCases/recruitmentCase.entity';
 
 @Module({
   imports: [
@@ -33,7 +33,7 @@ import { Case } from './cases/case.entity';
         GovernmentId,
         SocialProfile,
         Certification,
-        Case
+        RecruitmentCase
       ],
       synchronize: true,
       logging: process.env.DB_LOGGING === 'true' ? ['error', 'warn', 'info', 'log'] : false,
@@ -41,7 +41,7 @@ import { Case } from './cases/case.entity';
     CandidatesModule,
     SocialProfilesModule,
     CertificationsModule,
-    CasesModule,
+    RecruitmentCasesModule,
     EngagementsModule,
     GovermentIdsModule,
     ResumesModule
