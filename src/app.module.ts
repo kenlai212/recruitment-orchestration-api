@@ -1,18 +1,8 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
-import { CandidatesModule } from './candidates/candidates.module';
 import { TypeOrmModule } from '@nestjs/typeorm/dist/typeorm.module';
-import { Candidate } from './candidates/candidate.entity';
-import { SocialProfile } from './socialProfiles/socialProfile.entity';
-import { SocialProfilesModule } from './socialProfiles/socialProfiles.module';
-import { CertificationsModule } from './certifications/certifications.module';
-import { Certification } from './certifications/certification.entity';
 import { RecruitmentCasesModule } from './recruitmentCases/recruitmentCases.module';
 import { EngagementsModule } from './engagements/engagements.module';
-import { Resume } from './resumes/resume.entity';
-import { GovernmentId } from './govermentIds/govermentId.entity';
-import { GovermentIdsModule } from './govermentIds/govermentIds.module';
-import { ResumesModule } from './resumes/resumes.module';
 import { RecruitmentCase } from './recruitmentCases/recruitmentCase.entity';
 import { Engagement } from './engagements/engagement.entity';
 
@@ -29,24 +19,14 @@ import { Engagement } from './engagements/engagement.entity';
       password: process.env.DB_PASSWORD,
       database: process.env.DB_NAME,
       entities: [
-        Candidate,
-        Resume,
-        GovernmentId,
-        SocialProfile,
-        Certification,
         RecruitmentCase,
         Engagement
       ],
       synchronize: true,
       logging: process.env.DB_LOGGING === 'true' ? ['error', 'warn', 'info', 'log'] : false,
     }),
-    CandidatesModule,
-    SocialProfilesModule,
-    CertificationsModule,
     RecruitmentCasesModule,
     EngagementsModule,
-    GovermentIdsModule,
-    ResumesModule
   ]
 })
 export class AppModule { }

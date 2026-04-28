@@ -1,5 +1,11 @@
 import { Column, CreateDateColumn, Entity, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 
+export enum EngagementType {
+    ONE_MEET = 'ONE_MEET',
+    GROUP_MEET = 'GROUP_MEET',
+    TRAINING = 'TRAINING'
+}
+
 @Entity()
 export class Engagement {
     @PrimaryGeneratedColumn('uuid')
@@ -20,8 +26,8 @@ export class Engagement {
 
     @Column({
         nullable: false,
-        type: "varchar",
-        length: 36
+        type: "enum",
+        enum: EngagementType
     })
-    type: string
+    engagementType: EngagementType
 }

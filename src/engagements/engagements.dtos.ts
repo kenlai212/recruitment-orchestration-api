@@ -1,16 +1,11 @@
 import { ApiProperty } from "@nestjs/swagger";
 import { IsNotEmpty, IsString, MaxLength } from 'class-validator';
+import { EngagementType } from "./engagement.entity";
 
 export class EngagementDTO {
     engagementId: string;
     recruitmentCaseId: string;
-    type: string;
-}
-
-export enum EngagementType {
-    ONE_MEET = 'ONE_MEET',
-    GROUP_MEET = 'GROUP_MEET',
-    TRAINING = 'TRAINING'
+    engagementType: string;
 }
 
 export class PostEngagementRequestDTO {
@@ -28,5 +23,5 @@ export class PostEngagementRequestDTO {
         enumName: 'EngagementType'
     })
     @IsNotEmpty()
-    type: EngagementType;
+    engagementType: EngagementType;
 }

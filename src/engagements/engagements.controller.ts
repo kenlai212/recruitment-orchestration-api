@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Param, Post, Query } from "@nestjs/common";
+import { Body, Controller, Delete, Get, Param, Post } from "@nestjs/common";
 import { EngagementDTO, PostEngagementRequestDTO } from "./engagements.dtos";
 import { EngagementsService } from "./engagements.service";
 
@@ -10,11 +10,12 @@ export class EngagementsController {
 
     @Post("/")
     async newEngagement(@Body() body: PostEngagementRequestDTO): Promise<EngagementDTO> {
-        return await this.engagementsService.createNewEngagement(body.recruitmentCaseId, body.type);
+        return await this.engagementsService.createNewEngagement(body.recruitmentCaseId, body.engagementType);
     }
 
     @Get("/:engagementId")
-    async getEngagementById(): Promise<void> {
+    async getEngagementById(@Param('engagementId') engagementId: string): Promise<EngagementDTO> {
+        return await this.engagementsService.findEngagementById(engagementId);
     }
 
     @Delete("/:engagementId")

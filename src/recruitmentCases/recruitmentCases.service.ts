@@ -2,9 +2,7 @@ import { BadRequestException, Injectable, InternalServerErrorException, Logger, 
 import { InjectRepository } from "@nestjs/typeorm";
 import { RecruitmentCase } from "./recruitmentCase.entity";
 import { Repository } from "typeorm";
-import { CandidatesService } from "../candidates/candidates.service";
 import { RecruitmentCaseDTO } from "./recruitmentCases.dtos";
-import { NotFoundError } from "rxjs";
 
 @Injectable()
 export class RecruitmentCasesService {
@@ -13,7 +11,6 @@ export class RecruitmentCasesService {
     constructor(
         @InjectRepository(RecruitmentCase)
         private readonly caseRepository: Repository<RecruitmentCase>,
-        private readonly candidatesService: CandidatesService
     ) { }
 
     async createNewCase(recruiterId: string, candidateFullName: string, emailAddress?: string, phoneNumber?: string): Promise<RecruitmentCaseDTO> {

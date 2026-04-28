@@ -15,7 +15,7 @@ async function bootstrap() {
   app.useGlobalPipes(new ValidationPipe({ stopAtFirstError: true }));
 
   const config = new DocumentBuilder()
-    .setTitle('Recruitment Orchestration API')
+    .setTitle(process.env.APP_NAME || 'Recruitment Orchestration')
     .addServer(process.env.SWAGGER_SERVER_PREFIX || '')
     .setDescription('Manulife Recruitment Orchestration API')
     .setVersion(process.env.VERSION || '0.0.0')
