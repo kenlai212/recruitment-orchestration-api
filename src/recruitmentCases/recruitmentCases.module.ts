@@ -3,6 +3,7 @@ import { RecruitmentCasesController } from "./recruitmentCases.controller";
 import { TypeOrmModule } from "@nestjs/typeorm";
 import { RecruitmentCase } from "./recruitmentCase.entity";
 import { RecruitmentCasesService } from "./recruitmentCases.service";
+import { RecruitmentCasesServiceHelper } from "./recruitmentCases.service.helper";
 
 @Module({
     imports: [
@@ -12,7 +13,7 @@ import { RecruitmentCasesService } from "./recruitmentCases.service";
         RecruitmentCasesController
     ],
     providers: [
-        RecruitmentCasesService
+        RecruitmentCasesService, RecruitmentCasesServiceHelper
     ],
     exports: [
         RecruitmentCasesService

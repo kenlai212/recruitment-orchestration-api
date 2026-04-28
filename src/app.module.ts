@@ -26,7 +26,7 @@ import { Engagement } from './engagements/engagement.entity';
       logging: process.env.DB_LOGGING === 'true' ? ['error', 'warn', 'info', 'log'] : false,
     }),
     RecruitmentCasesModule,
-    EngagementsModule,
+    EngagementsModule
   ]
 })
 export class AppModule { }

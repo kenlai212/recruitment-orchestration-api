@@ -1,5 +1,10 @@
 import { Column, CreateDateColumn, Entity, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 
+export enum CaseStatus {
+    OPEN = "OPEN",
+    CLOSED = "CLOSED"
+}
+
 @Entity()
 export class RecruitmentCase {
     @PrimaryGeneratedColumn('uuid')
@@ -24,4 +29,12 @@ export class RecruitmentCase {
         length: 36
     })
     recuriterId: string
+
+    @Column({
+        nullable: false,
+        type: "enum",
+        enum: CaseStatus,
+        default: CaseStatus.OPEN
+    })
+    status: CaseStatus
 }

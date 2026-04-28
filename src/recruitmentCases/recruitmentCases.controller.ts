@@ -1,6 +1,7 @@
 import { Body, Controller, Delete, Get, Post, Query } from "@nestjs/common";
-import { RecruitmentCaseDTO, PostCaseRequestDTO } from "./recruitmentCases.dtos";
+import { RecruitmentCaseDTO, PostCaseRequestDTO, GetCaseCyCandidateIdRequestDTO } from "./recruitmentCases.dtos";
 import { RecruitmentCasesService } from "./recruitmentCases.service";
+import { ApiOkResponse, ApiOperation } from "@nestjs/swagger";
 
 @Controller("/recruitment-case")
 export class RecruitmentCasesController {
@@ -8,15 +9,30 @@ export class RecruitmentCasesController {
         private readonly recruitmentCasesService: RecruitmentCasesService
     ) { }
 
-
     @Post("/")
+    @ApiOperation({
+        summary: 'Create new Recruitment Case.',
+        description: `Create new Recruitment Case. This will also call the agency-actors-api to create a new Candidate`
+    })
+    @ApiOkResponse({
+        description: 'Successfully POST a new recruitment case.',
+        type: RecruitmentCaseDTO,
+    })
     async newCase(@Body() body: PostCaseRequestDTO): Promise<RecruitmentCaseDTO> {
         return await this.recruitmentCasesService.createNewCase(body.recruiterId, body.candidateFullName, body.candidateEmailAddress, body.candidatePhoneNumber);
     }
 
     @Get("/:candidateId")
-    async getCasesByCandidateId(@Query('candidateId') candidateId: string): Promise<RecruitmentCaseDTO> {
-        return await this.recruitmentCasesService.findByCandidateId(candidateId);
+    @ApiOperation({
+        summary: 'Get the recruitment case for a specific candidate.',
+        description: `Get the recruitment case for a specific candidate. One candidate can have only one recruitment case.`
+    })
+    @ApiOkResponse({
+        description: 'Get the recruitment case for a specific candidate.',
+        type: RecruitmentCaseDTO,
+    })
+    async getCasesByCandidateId(@Query('candidateId') query: GetCaseCyCandidateIdRequestDTO): Promise<RecruitmentCaseDTO> {
+        return await this.recruitmentCasesService.findByCandidateId(query.candidateId);
     }
 
     @Delete("/:caseId")
@@ -33,7 +49,7 @@ export class RecruitmentCasesController {
         return new RecruitmentCaseDTO();
     }*/
 
-    @Post("/case/reassign")
+    @Post("/close")
     async assignCaseById(@Query('caseId') caseId: string, @Query('recruiterId') recruiterId: string): Promise<RecruitmentCaseDTO> {
         return new RecruitmentCaseDTO();
     }
