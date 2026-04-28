@@ -35,22 +35,31 @@ export class RecruitmentCasesController {
         return await this.recruitmentCasesService.findByCandidateId(query.candidateId);
     }
 
+    @ApiOperation({
+        summary: 'Delete the recruitment case for a specific candidate.',
+        description: `Please becareful, this will be a hard delete. and all of it's engagement records`
+    })
+    @ApiOkResponse({
+        description: 'Successfull delete message',
+        type: String,
+    })
     @Delete("/:caseId")
-    async deleteCaseById(@Query('caseId') caseId: string): Promise<void> {
+    async deleteCaseById(@Query('caseId') caseId: string): Promise<string> {
+        return "successful deletion";
     }
 
-    /*@Post("/:caseId/close")
-    async closeCaseById(@Query('caseId') caseId: string): Promise<RecruitmentCaseDTO> {
-        return new RecruitmentCaseDTO();
-    }
-
-    @Post("/case/:caseId/reopen")
-    async reopenCaseById(@Query('caseId') caseId: string): Promise<RecruitmentCaseDTO> {
-        return new RecruitmentCaseDTO();
-    }*/
-
+    @ApiOperation({
+        summary: 'Close the recruitment case.',
+        description: `Close case will only change the status`
+    })
+    @ApiOkResponse({
+        description: 'Change the Recruitemnt Case status to CLOSE',
+        type: RecruitmentCaseDTO,
+    })
     @Post("/close")
-    async assignCaseById(@Query('caseId') caseId: string, @Query('recruiterId') recruiterId: string): Promise<RecruitmentCaseDTO> {
+    async closeCase(@Query('caseId') caseId: string, @Query('recruiterId') recruiterId: string): Promise<RecruitmentCaseDTO> {
         return new RecruitmentCaseDTO();
     }
+
+    //todo: reopen case
 }
