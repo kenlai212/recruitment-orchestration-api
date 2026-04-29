@@ -1,6 +1,7 @@
-import { Body, Controller, Delete, Get, Param, Post } from "@nestjs/common";
-import { EngagementDTO, PostEngagementRequestDTO } from "./engagements.dtos";
+import { Body, Controller, Delete, Get, Param, Post, Query } from "@nestjs/common";
+import { EngagementDTO, GetEngagementsRequestDTO, PostEngagementRequestDTO } from "./engagements.dtos";
 import { EngagementsService } from "./engagements.service";
+import { ApiOkResponse, ApiOperation } from "@nestjs/swagger";
 
 @Controller("/engagement")
 export class EngagementsController {
@@ -9,13 +10,29 @@ export class EngagementsController {
     ) { }
 
     @Post("/")
+    @ApiOperation({
+        summary: 'Create new Engagement for a Recruitment Case.',
+        description: `Each Engagement must be tie to an existing Recruitment Case. `
+    })
+    @ApiOkResponse({
+        description: 'Successfully POST a new engagement.',
+        type: EngagementDTO,
+    })
     async newEngagement(@Body() body: PostEngagementRequestDTO): Promise<EngagementDTO> {
         return await this.engagementsService.createNewEngagement(body.recruitmentCaseId, body.engagementType);
     }
 
-    @Get("/:engagementId")
-    async getEngagementById(@Param('engagementId') engagementId: string): Promise<EngagementDTO> {
-        return await this.engagementsService.findEngagementById(engagementId);
+    @Get("/")
+    @ApiOperation({
+        summary: 'Get Engagement by the engagementId.',
+        description: `Get the details of a specific Engagement record.`
+    })
+    @ApiOkResponse({
+        description: 'Returns a list of engagements.',
+        type: EngagementDTO,
+    })
+    async getEngagementsById(@Query() query: GetEngagementsRequestDTO): Promise<Array<EngagementDTO>> {
+        return await this.engagementsService.findEngagements(query.recruitmentCaseId, query.engagementId);
     }
 
     @Delete("/:engagementId")

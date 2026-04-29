@@ -31,19 +31,30 @@ export class EngagementsService {
         return this.entityToDTO(engagement);
     }
 
-    async findEngagementById(engagementId: string): Promise<EngagementDTO> {
-        const engagement = await this.engagementsRepository.findOne({
-            where: { engagementId }
+    async findEngagements(recruitmentCaseId?: string, engagementId?: string): Promise<Array<EngagementDTO>> {
+        if (!recruitmentCaseId && !engagementId)
+            throw new BadRequestException("Must provide either recruitmentCaseId or engagementId");
+
+        let whereClause = {}
+        if (recruitmentCaseId)
+            whereClause = { recruitmentCaseId }
+        else
+            whereClause = { engagementId }
+
+        const engagements = await this.engagementsRepository.find({
+            where: whereClause
         })
             .catch(error => {
                 this.logger.error(error);
                 throw new InternalServerErrorException("deleteEngagement() not available");
             })
 
-        if (!engagement)
-            throw new BadRequestException(`Invalid engagement id : ${engagement} `);
+        let engagementDTOs = [];
+        engagements.forEach(element => {
+            engagementDTOs.push(this.entityToDTO(element))
+        });
 
-        return this.entityToDTO(engagement);
+        return engagementDTOs;
     }
 
     async deleteEngagement(engagementId: string): Promise<string> {

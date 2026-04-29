@@ -15,11 +15,11 @@ async function bootstrap() {
   app.useGlobalPipes(new ValidationPipe({ stopAtFirstError: true }));
 
   const config = new DocumentBuilder()
-    .setTitle(process.env.APP_NAME || 'Recruitment Orchestration')
+    .setTitle(process.env.APP_NAME || 'Recruitment Orchestration API')
     .addServer(process.env.SWAGGER_SERVER_PREFIX || '')
     .setDescription('Manulife Recruitment Orchestration API')
     .setVersion(process.env.VERSION || '0.0.0')
-    .addTag('recruitment-orchestration')
+    .addTag('Recuritement Case Orchestration Domain API', 'Manage the life cycle of recruitement cases. One case per Candidate')
     .addBearerAuth()
     .build();
   const documentFactory = () => SwaggerModule.createDocument(app, config);
